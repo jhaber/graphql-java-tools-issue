@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import org.junit.Test;
 
@@ -103,6 +104,45 @@ public class MapTest {
     assertThat(result.<Map<String, Map<String, String>>>getData()).isEqualTo(EXPECTED_DATA);
   }
 
+  @Test
+  public void itHandlesCompletableFutureMapTypeWhenAddedToDictionary() throws Exception {
+    String schemaString = readResourceToString("schema.graphqls");
+    String queryString = readResourceToString("query.graphql");
+
+    GraphQLSchema schema = SchemaParser
+        .newParser()
+        .resolvers(new CompletableFutureQueryResolver())
+        .dictionary("Greeting", Greeting.class)
+        .schemaString(schemaString)
+        .build()
+        .makeExecutableSchema();
+
+    GraphQL graphQL = GraphQL.newGraphQL(schema).build();
+
+    ExecutionResult result = graphQL.execute(queryString);
+
+    assertThat(result.<Map<String, Map<String, String>>>getData()).isEqualTo(EXPECTED_DATA);
+  }
+
+  @Test
+  public void itHandlesCompletableFutureMapTypeWhenNotAddedToDictionary() throws Exception {
+    String schemaString = readResourceToString("schema.graphqls");
+    String queryString = readResourceToString("query.graphql");
+
+    GraphQLSchema schema = SchemaParser
+        .newParser()
+        .resolvers(new CompletableFutureQueryResolver())
+        .schemaString(schemaString)
+        .build()
+        .makeExecutableSchema();
+
+    GraphQL graphQL = GraphQL.newGraphQL(schema).build();
+
+    ExecutionResult result = graphQL.execute(queryString);
+
+    assertThat(result.<Map<String, Map<String, String>>>getData()).isEqualTo(EXPECTED_DATA);
+  }
+
   private static String readResourceToString(String resourceName) throws IOException {
     return Resources.toString(
         Resources.getResource(resourceName),
@@ -139,6 +179,27 @@ public class MapTest {
 
     @Override
     public Set<Entry<String, Greeting>> entrySet() {
+      throw new UnsupportedOperationException();
+    }
+  }
+
+  public static class CompletableFutureQueryResolver extends AbstractMap<String, CompletableFuture<Greeting>> implements GraphQLQueryResolver {
+
+    public Greeting greetOne() {
+      return new Greeting("Hello one");
+    }
+
+    @Override
+    public CompletableFuture<Greeting> get(Object key) {
+      if ("greetTwo".equals(key)) {
+        return CompletableFuture.completedFuture(new Greeting("Hello two"));
+      } else {
+        throw new IllegalArgumentException();
+      }
+    }
+
+    @Override
+    public Set<Entry<String, CompletableFuture<Greeting>>> entrySet() {
       throw new UnsupportedOperationException();
     }
   }
