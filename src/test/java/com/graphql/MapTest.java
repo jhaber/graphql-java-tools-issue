@@ -33,7 +33,7 @@ public class MapTest {
     GraphQLSchema schema = SchemaParser
         .newParser()
         .resolvers(new QueryResolver())
-        .dictionary("Greeting2", Greeting.class)
+        .dictionary("Greeting", Greeting.class)
         .schemaString(schemaString)
         .build()
         .makeExecutableSchema();
