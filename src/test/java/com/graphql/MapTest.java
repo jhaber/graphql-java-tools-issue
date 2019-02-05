@@ -21,8 +21,8 @@ import graphql.schema.GraphQLSchema;
 
 public class MapTest {
   private static final Map<String, Map<String, String>> EXPECTED_DATA = ImmutableMap.of(
-      "defaultGreeting", ImmutableMap.of("value", "Hello"),
-      "greet", ImmutableMap.of("value", "Hello greet")
+      "greetOne", ImmutableMap.of("value", "Hello one"),
+      "greetTwo", ImmutableMap.of("value", "Hello two")
   );
 
   @Test
@@ -33,7 +33,7 @@ public class MapTest {
     GraphQLSchema schema = SchemaParser
         .newParser()
         .resolvers(new QueryResolver())
-        .dictionary("Greeting", Greeting.class)
+        .dictionary("Greeting2", Greeting.class)
         .schemaString(schemaString)
         .build()
         .makeExecutableSchema();
@@ -72,7 +72,7 @@ public class MapTest {
     GraphQLSchema schema = SchemaParser
         .newParser()
         .resolvers(new QueryResolver())
-        .dictionary("Greeting", Greeting.class)
+        .dictionary("Greeting2", Greeting.class)
         .schemaString(schemaString)
         .build()
         .makeExecutableSchema();
@@ -124,13 +124,17 @@ public class MapTest {
 
   public static class QueryResolver extends AbstractMap<String, Greeting> implements GraphQLQueryResolver {
 
-    public Greeting defaultGreeting() {
-      return new Greeting("Hello");
+    public Greeting greetOne() {
+      return new Greeting("Hello one");
     }
 
     @Override
     public Greeting get(Object key) {
-      return new Greeting("Hello " + key);
+      if ("greetTwo".equals(key)) {
+        return new Greeting("Hello two");
+      } else {
+        throw new IllegalArgumentException();
+      }
     }
 
     @Override

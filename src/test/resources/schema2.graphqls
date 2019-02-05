@@ -1,6 +1,6 @@
 type Query {
-  defaultGreeting: Greeting2!
-  greet(name: String!): Greeting!
+  greetOne: Greeting!
+  greetTwo: Greeting2!
 }
 
 type Greeting {

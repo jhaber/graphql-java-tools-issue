@@ -1,8 +1,8 @@
 {
-  defaultGreeting {
+  greetOne {
     value
   }
-  greet(name: "world") {
+  greetTwo {
     value
   }
 }
