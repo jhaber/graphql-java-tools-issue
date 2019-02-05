@@ -1,0 +1,8 @@
+{
+  defaultGreeting {
+    value
+  }
+  greet(name: "world") {
+    value
+  }
+}

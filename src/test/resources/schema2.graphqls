@@ -1,0 +1,12 @@
+type Query {
+  defaultGreeting: Greeting2!
+  greet(name: String!): Greeting!
+}
+
+type Greeting {
+  value: String!
+}
+
+type Greeting2 {
+  value: String!
+}
